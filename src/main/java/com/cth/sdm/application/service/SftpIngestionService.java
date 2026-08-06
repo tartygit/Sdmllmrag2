@@ -28,9 +28,12 @@ public class SftpIngestionService {
     private final IngestionHandler ingestionHandler;
     private final UserRepository userRepository;
 
+    // Flag to prevent uncontrolled simulated duplicate ingestions in scheduled polling
+    private boolean mockFileProcessed = false;
+
     @Scheduled(fixedDelayString = "${app.ingestion.sftp-poll-interval:60000}") // Default 1 minute
     public void pollSftpServer() {
-        if (!sftpEnabled) {
+        if (!sftpEnabled || mockFileProcessed) {
             return;
         }
 
@@ -47,6 +50,8 @@ public class SftpIngestionService {
 
             log.info("SFTP Ingestion Service picked up file: sftp_mock_document.txt");
             ingestionHandler.ingest(stream, "sftp_mock_document.txt", "text/plain", admin);
+
+            mockFileProcessed = true; // Block subsequent mock polling executions
 
         } catch (Exception e) {
             log.error("Failed to poll or process files from SFTP: {}", e.getMessage());

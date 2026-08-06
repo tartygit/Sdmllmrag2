@@ -39,6 +39,10 @@ public class ApprovalWorkflow {
     @OrderBy("stepOrder ASC")
     private List<WorkflowStep> steps;
 
+    @OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<WorkflowHistory> histories = new java.util.ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         initiatedAt = LocalDateTime.now();

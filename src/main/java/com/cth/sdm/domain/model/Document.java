@@ -21,6 +21,9 @@ public class Document {
     @Column(nullable = false, length = 255)
     private String title;
 
+    @Column(name = "document_number", length = 100, unique = true)
+    private String documentNumber;
+
     @Column(length = 1000)
     private String description;
 

@@ -30,6 +30,7 @@ public class DocumentIngestionService implements IngestionHandler {
     private final DocumentRepository documentRepository;
     private final RabbitEventDispatcher rabbitEventDispatcher;
     private final SecurityAuditService securityAuditService;
+    private final AutoNumberingService autoNumberingService;
 
     @Override
     @Transactional
@@ -74,8 +75,11 @@ public class DocumentIngestionService implements IngestionHandler {
         }
 
         // 4. Save Core Domain Entities and Mappings to DB
+        String generatedDocNumber = autoNumberingService.generateDocumentNumber("SDDE", "REQ");
+
         Document document = Document.builder()
                 .title(originalFileName)
+                .documentNumber(generatedDocNumber)
                 .description("Automatically ingested file deliverable")
                 .status(DocumentStatus.DRAFT)
                 .owner(owner)
