@@ -15,3 +15,9 @@ spring:
     enabled: true
     baseline-on-migrate: true
     locations: classpath:db/migration
+
+# Test Storage Configuration to use target directory (always writable)
+app:
+  storage:
+    type: local
+    local-path: target/test-storage
