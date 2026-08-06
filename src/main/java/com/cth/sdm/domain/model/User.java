@@ -2,6 +2,7 @@ package com.cth.sdm.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -33,6 +34,23 @@ public class User {
     @Builder.Default
     private boolean enabled = true;
 
+    @Column(name = "failed_attempts", nullable = false)
+    @Builder.Default
+    private Integer failedAttempts = 0;
+
+    @Column(name = "lock_time")
+    private LocalDateTime lockTime;
+
+    @Column(name = "password_updated_at", nullable = false)
+    private LocalDateTime passwordUpdatedAt;
+
+    @Column(name = "mfa_secret", length = 100)
+    private String mfaSecret;
+
+    @Column(name = "mfa_enabled", nullable = false)
+    @Builder.Default
+    private boolean mfaEnabled = false;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_roles",
@@ -40,4 +58,11 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+
+    @PrePersist
+    protected void onCreate() {
+        if (passwordUpdatedAt == null) {
+            passwordUpdatedAt = LocalDateTime.now();
+        }
+    }
 }

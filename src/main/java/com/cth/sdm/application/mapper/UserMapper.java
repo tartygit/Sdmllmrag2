@@ -18,6 +18,11 @@ public interface UserMapper {
 
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "password", ignore = true)
+    @Mapping(target = "failedAttempts", ignore = true)
+    @Mapping(target = "lockTime", ignore = true)
+    @Mapping(target = "passwordUpdatedAt", ignore = true)
+    @Mapping(target = "mfaSecret", ignore = true)
+    @Mapping(target = "mfaEnabled", ignore = true)
     User toEntity(UserDto dto);
 
     @Named("mapRoles")
