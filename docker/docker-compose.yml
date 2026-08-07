@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: sdde_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: sdde_db
+      POSTGRES_USER: sdde_user
+      POSTGRES_PASSWORD: sdde_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: sdde_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: sdde_rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  minio:
+    image: minio/minio:RELEASE.2024-01-28T22-35-53Z
+    container_name: sdde_minio
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadminpassword
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+
+  clamav:
+    image: clamav/clamav:stable
+    container_name: sdde_clamav
+    restart: always
+    ports:
+      - "3310:3310"
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: sdde_ollama
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+  prometheus:
+    image: prom/prometheus:v2.49.1
+    container_name: sdde_prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:10.3.1
+    container_name: sdde_grafana
+    restart: always
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres_data:
+  minio_data:
+  ollama_data:

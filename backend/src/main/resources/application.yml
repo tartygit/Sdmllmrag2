@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: sdde-backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sdde_db
+    username: sdde_user
+    password: sdde_password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+app:
+  jwt:
+    secret: SuperSecretKeyThatMustBeAtLeast32BytesLongForHS256Security!
+    expiration-ms: 86400000
+  upload:
+    dir: /tmp/sdde_uploads
+  clamav:
+    host: localhost
+    port: 3310
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
