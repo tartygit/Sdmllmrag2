@@ -23,6 +23,17 @@ spring:
     redis:
       host: localhost
       port: 6379
+  mail:
+    host: localhost
+    port: 25
+    username: user
+    password: password
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
 
 app:
   jwt:
@@ -33,6 +44,12 @@ app:
   clamav:
     host: localhost
     port: 3310
+    enabled: false
+  s3:
+    endpoint: http://localhost:9000
+    access-key: minioadmin
+    secret-key: minioadminpassword
+    bucket: sdde-bucket
     enabled: false
 
 management:
