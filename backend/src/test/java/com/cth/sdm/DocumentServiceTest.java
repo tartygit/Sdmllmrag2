@@ -2,8 +2,10 @@ package com.cth.sdm;
 
 import com.cth.sdm.model.Document;
 import com.cth.sdm.model.DocumentStatus;
+import com.cth.sdm.repository.AIRecommendationRepository;
 import com.cth.sdm.repository.DocumentRepository;
 import com.cth.sdm.repository.DocumentWorkflowRepository;
+import com.cth.sdm.service.AIAgentOrchestrator;
 import com.cth.sdm.service.DocumentService;
 import com.cth.sdm.util.ClamAVScanner;
 import com.cth.sdm.util.StorageService;
@@ -22,6 +24,8 @@ class DocumentServiceTest {
     private DocumentWorkflowRepository workflowRepository;
     private StorageService storageService;
     private ClamAVScanner clamAVScanner;
+    private AIAgentOrchestrator aiAgentOrchestrator;
+    private AIRecommendationRepository aiRecommendationRepository;
     private DocumentService documentService;
 
     @BeforeEach
@@ -30,12 +34,16 @@ class DocumentServiceTest {
         workflowRepository = Mockito.mock(DocumentWorkflowRepository.class);
         storageService = Mockito.mock(StorageService.class);
         clamAVScanner = Mockito.mock(ClamAVScanner.class);
+        aiAgentOrchestrator = Mockito.mock(AIAgentOrchestrator.class);
+        aiRecommendationRepository = Mockito.mock(AIRecommendationRepository.class);
 
         documentService = new DocumentService(
                 documentRepository,
                 workflowRepository,
                 storageService,
-                clamAVScanner
+                clamAVScanner,
+                aiAgentOrchestrator,
+                aiRecommendationRepository
         );
     }
 

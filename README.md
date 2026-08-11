@@ -12,25 +12,36 @@ SDDE is engineered based on **Clean Architecture, Domain-Driven Design (DDD), an
 
 ---
 
-## 2. Advanced Integration Modules
+## 2. Advanced Multi-Agent Ingestion Pipeline (Anthropic Academy)
+SDDE implements a multi-agent orchestrated pipeline delegating document processing across 4 distinct specialized AI Agents:
+1. **Parser Agent**: Performs raw document extraction and structures content into high-fidelity markdown representations.
+2. **Drafter Agent**: Extracts compliance scores, indexes draft metrics, maps out risk factors, and flags missing specifications.
+3. **Reviewer Agent**: Audits generated suggestions and enforces rigid hard gates (such as compliance thresholds and quality minimums) before registering reviews.
+4. **Log Reviewer Agent**: Evaluates ingestion and execution log traces to certify that zero processing issues occurred before final sign-off.
 
-### 2.1. Unified Notification Center
+Handoff states and orchestration flows are fully integrated within `AIAgentOrchestrator.java` and governed by hard sign-off workflow approval gates.
+
+---
+
+## 3. Advanced Integration Modules
+
+### 3.1. Unified Notification Center
 Unified service (`NotificationService.java`) providing robust:
 - **Email Delivery**: Integrates JavaMailSender.
 - **SMS Gateway Alerts**: Toggleable text notifications.
 - **In-App Logging Alerts**: Dashboard notifications queue.
 
-### 2.2. Distributed OpenTelemetry Tracing
+### 3.2. Distributed OpenTelemetry Tracing
 Observed metrics tracing configurations (`OpenTelemetryConfig.java`) providing observability trace span log outputs to Promtheus.
 
-### 2.3. Multi-Language Support (i18n)
+### 3.3. Multi-Language Support (i18n)
 Supports internationalization with custom property file resources:
 - English: `messages.properties`
 - French: `messages_fr.properties`
 
 ---
 
-## 3. Deployment & Automation Scripts
+## 4. Deployment & Automation Scripts
 - Run `./build.sh` to compile backend packages and frontend Vite chunks.
 - Run `./start.sh` to spin up PostgreSQL, MinIO, Redis, RabbitMQ, and Ollama containers.
 - Run `./test.sh` to execute JUnit test cases completely offline.

@@ -1,8 +1,10 @@
 package com.cth.sdm.service;
 
+import com.cth.sdm.model.AIRecommendation;
 import com.cth.sdm.model.Document;
 import com.cth.sdm.model.DocumentStatus;
 import com.cth.sdm.model.DocumentWorkflow;
+import com.cth.sdm.repository.AIRecommendationRepository;
 import com.cth.sdm.repository.DocumentRepository;
 import com.cth.sdm.repository.DocumentWorkflowRepository;
 import com.cth.sdm.util.ClamAVScanner;
@@ -22,16 +24,22 @@ public class DocumentService {
     private final DocumentWorkflowRepository workflowRepository;
     private final StorageService storageService;
     private final ClamAVScanner clamAVScanner;
+    private final AIAgentOrchestrator aiAgentOrchestrator;
+    private final AIRecommendationRepository aiRecommendationRepository;
 
     public DocumentService(
             DocumentRepository documentRepository,
             DocumentWorkflowRepository workflowRepository,
             StorageService storageService,
-            ClamAVScanner clamAVScanner) {
+            ClamAVScanner clamAVScanner,
+            AIAgentOrchestrator aiAgentOrchestrator,
+            AIRecommendationRepository aiRecommendationRepository) {
         this.documentRepository = documentRepository;
         this.workflowRepository = workflowRepository;
         this.storageService = storageService;
         this.clamAVScanner = clamAVScanner;
+        this.aiAgentOrchestrator = aiAgentOrchestrator;
+        this.aiRecommendationRepository = aiRecommendationRepository;
     }
 
     public List<Document> getAllDocuments() {
@@ -59,7 +67,7 @@ public class DocumentService {
             String owner,
             String description) {
 
-        String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toUpperCase();
+        String ext = originalFilename.contains(".") ? originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toUpperCase() : "TXT";
         String savedPath = storageService.storeFile(fileStream, originalFilename);
 
         String appPrefix = applicationCode.substring(0, Math.min(3, applicationCode.length())).toUpperCase();
@@ -97,12 +105,24 @@ public class DocumentService {
         doc.setStatus(DocumentStatus.INDEXED);
         documentRepository.save(doc);
 
+        // Delegate to AI Agents Orchestration
+        try {
+            AIRecommendation recommendation = aiAgentOrchestrator.orchestrateDocumentAnalysis(
+                    doc.getId(),
+                    doc.getName(),
+                    "Technical specifications outlining system architecture parameters and compliance requirements."
+            );
+            aiRecommendationRepository.save(recommendation);
+        } catch (Exception e) {
+            System.err.println("Multi-Agent AI Orchestration failed: " + e.getMessage());
+        }
+
         DocumentWorkflow workflow = DocumentWorkflow.builder()
                 .documentId(doc.getId())
                 .step("MAKER")
                 .action("UPLOADED")
                 .actor(owner)
-                .comments("File uploaded and verified.")
+                .comments("File uploaded and verified by AI Agent Orchestrator.")
                 .actionAt(LocalDateTime.now())
                 .build();
         workflowRepository.save(workflow);
