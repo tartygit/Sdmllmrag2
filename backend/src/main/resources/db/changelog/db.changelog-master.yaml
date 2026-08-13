@@ -1,0 +1,466 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: jules
+      changes:
+        - createTable:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(30)
+                  constraints:
+                    unique: true
+                    nullable: false
+
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(50)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: varchar(20)
+              - column:
+                  name: enabled
+                  type: boolean
+                  defaultValueBoolean: true
+              - column:
+                  name: locked
+                  type: boolean
+                  defaultValueBoolean: false
+              - column:
+                  name: login_attempts
+                  type: int
+                  defaultValueNumeric: 0
+              - column:
+                  name: password_expiry
+                  type: timestamp
+              - column:
+                  name: lock_time
+                  type: timestamp
+
+        - createTable:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            tableName: user_roles
+            columnNames: user_id, role_id
+
+        - addForeignKeyConstraint:
+            baseTableName: user_roles
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_user_roles_user
+
+        - addForeignKeyConstraint:
+            baseTableName: user_roles
+            baseColumnNames: role_id
+            referencedTableName: roles
+            referencedColumnNames: id
+            constraintName: fk_user_roles_role
+
+        - createTable:
+            tableName: documents
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: document_code
+                  type: varchar(50)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_type
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_size
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_path
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: application_code
+                  type: varchar(3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sdlc_phase
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: int
+                  defaultValueNumeric: 1
+                  constraints:
+                    nullable: false
+              - column:
+                  name: owner
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(500)
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+
+        - createTable:
+            tableName: document_versions
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: document_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_path
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: author
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: comments
+                  type: varchar(500)
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: document_workflows
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: document_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: step
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: action
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: actor
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: comments
+                  type: varchar(500)
+              - column:
+                  name: action_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: ai_recommendations
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: document_id
+                  type: bigint
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: summary
+                  type: text
+              - column:
+                  name: missing_sections
+                  type: text
+              - column:
+                  name: compliance_score
+                  type: int
+              - column:
+                  name: suggested_improvements
+                  type: text
+              - column:
+                  name: similar_documents
+                  type: text
+              - column:
+                  name: risk_assessment
+                  type: text
+              - column:
+                  name: quality_score
+                  type: int
+              - column:
+                  name: duplicate_detection
+                  type: text
+
+        - createTable:
+            tableName: audit_logs
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: timestamp
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ip
+                  type: varchar(45)
+              - column:
+                  name: operation
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: old_value
+                  type: text
+              - column:
+                  name: new_value
+                  type: text
+              - column:
+                  name: file_name
+                  type: varchar(100)
+              - column:
+                  name: approval_action
+                  type: varchar(50)
+              - column:
+                  name: ai_recommendation
+                  type: text
+
+        - createTable:
+            tableName: system_configurations
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: config_key
+                  type: varchar(100)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: config_value
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+
+        - insert:
+            tableName: roles
+            columns:
+              - column: { name: name, value: ROLE_ADMIN }
+              - column: { name: name, value: ROLE_MAKER }
+              - column: { name: name, value: ROLE_CHECKER }
+              - column: { name: name, value: ROLE_APPROVER }
+              - column: { name: name, value: ROLE_VIEWER }
+              - column: { name: name, value: ROLE_AUDITOR }
+
+        - insert:
+            tableName: system_configurations
+            columns:
+              - column: { name: config_key, value: app.name }
+              - column: { name: config_value, value: "Software Development Document Environment" }
+              - column: { name: description, value: "Application Name Config" }
+        - insert:
+            tableName: system_configurations
+            columns:
+              - column: { name: config_key, value: mfa.enabled }
+              - column: { name: config_value, value: "false" }
+              - column: { name: description, value: "Toggle MFA (true/false)" }
+        - insert:
+            tableName: system_configurations
+            columns:
+              - column: { name: config_key, value: mfa.type }
+              - column: { name: config_value, value: "email" }
+              - column: { name: description, value: "MFA notification system: email or sms" }
+        - insert:
+            tableName: system_configurations
+            columns:
+              - column: { name: config_key, value: password.expiry.days }
+              - column: { name: config_value, value: "90" }
+              - column: { name: description, value: "User password expiry configuration in days" }
+        - insert:
+            tableName: system_configurations
+            columns:
+              - column: { name: config_key, value: user.lockout.attempts }
+              - column: { name: config_value, value: "5" }
+              - column: { name: description, value: "Max login retry attempts before lockout" }
+
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, value: 1 }
+              - column: { name: username, value: admin }
+              - column: { name: password, value: "$2a$10$8.K7XWcAtb3N3j0xZ6wKcewR2l0O.qf1h5l9kFMyyBfE5W0P4n38y" }
+              - column: { name: email, value: admin@cth.com }
+              - column: { name: enabled, value: true }
+              - column: { name: locked, value: false }
+              - column: { name: login_attempts, value: 0 }
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, value: 2 }
+              - column: { name: username, value: maker }
+              - column: { name: password, value: "$2a$10$8.K7XWcAtb3N3j0xZ6wKcewR2l0O.qf1h5l9kFMyyBfE5W0P4n38y" }
+              - column: { name: email, value: maker@cth.com }
+              - column: { name: enabled, value: true }
+              - column: { name: locked, value: false }
+              - column: { name: login_attempts, value: 0 }
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, value: 3 }
+              - column: { name: username, value: checker }
+              - column: { name: password, value: "$2a$10$8.K7XWcAtb3N3j0xZ6wKcewR2l0O.qf1h5l9kFMyyBfE5W0P4n38y" }
+              - column: { name: email, value: checker@cth.com }
+              - column: { name: enabled, value: true }
+              - column: { name: locked, value: false }
+              - column: { name: login_attempts, value: 0 }
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, value: 4 }
+              - column: { name: username, value: approver }
+              - column: { name: password, value: "$2a$10$8.K7XWcAtb3N3j0xZ6wKcewR2l0O.qf1h5l9kFMyyBfE5W0P4n38y" }
+              - column: { name: email, value: approver@cth.com }
+              - column: { name: enabled, value: true }
+              - column: { name: locked, value: false }
+              - column: { name: login_attempts, value: 0 }
+
+        - insert:
+            tableName: user_roles
+            columns:
+              - column: { name: user_id, value: 1 }
+              - column: { name: role_id, value: 1 }
+        - insert:
+            tableName: user_roles
+            columns:
+              - column: { name: user_id, value: 2 }
+              - column: { name: role_id, value: 2 }
+        - insert:
+            tableName: user_roles
+            columns:
+              - column: { name: user_id, value: 3 }
+              - column: { name: role_id, value: 3 }
+        - insert:
+            tableName: user_roles
+            columns:
+              - column: { name: user_id, value: 4 }
+              - column: { name: role_id, value: 4 }
